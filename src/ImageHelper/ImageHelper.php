@@ -8,18 +8,17 @@ use Intervention\Image\Facades\Image;
 /**
  * Trait ImageHelper
  * @property array $attributes
- * @package BackpackHelpers\ImageHelper
  */
 trait ImageHelper {
 
     /**
      * @param string Attribute name $attribute
-     * @param string base64string $value
+     * @param string | null base64string $value
      * @param string $folder
      * @param string $disk
      * @return void
      */
-    public function handleStoreImageAttribute(string $attribute, string $value = null, string $folder, string $disk)
+    public function handleStoreImageAttribute(string $attribute, $value, string $folder, string $disk)
     {
         if ($value == null) {
             Storage::disk($disk)->delete($this->{$attribute});
