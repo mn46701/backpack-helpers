@@ -47,7 +47,7 @@ trait ImageHelper {
         $removeFiles = request()->get('clear_gallery', false);
 
         $currentFiles = isset($this->attributes[$attribute]) ? json_decode(
-            $this->attributes[$attribute]
+            $this->attributes[$attribute], true
         ) : [];
 
         if ($removeFiles) {
