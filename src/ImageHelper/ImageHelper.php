@@ -2,6 +2,7 @@
 
 namespace BackpackHelpers\ImageHelper;
 
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 
@@ -18,10 +19,10 @@ trait ImageHelper {
      * @param string $disk
      * @return void
      */
-    public function handleStoreImageAttribute(string $attribute, $value, string $folder, string $disk)
+    public function handleStoreImageAttribute(string $attribute, $value, string $folder, string $disk) : void
     {
-        if ($value == null) {
-            Storage::disk($disk)->delete($this->{$attribute});
+        if (is_null($value)) {
+            $this->deleteFileFromDisk($this->{$attribute}, $disk);
             $this->attributes[$attribute] = null;
         }
 
@@ -33,7 +34,45 @@ trait ImageHelper {
             Storage::disk($disk)->put($folder . '/' . $filename, $image->stream());
             $this->attributes[$attribute] = "$folder/$filename";
         }
+    }
 
+    /**
+     * @param string $attribute
+     * @param $files
+     * @param string $folder
+     * @param string $disk
+     */
+    public function handleStoreUploadMultipleField(string $attribute, $files, string $folder, string $disk): void
+    {
+        $removeFiles = request()->get('clear_gallery', false);
+
+        $currentFiles = isset($this->attributes[$attribute]) ? json_decode(
+            $this->attributes[$attribute]
+        ) : [];
+
+        if ($removeFiles) {
+            $filesLeft = array_diff($currentFiles, $removeFiles);
+            $this->attributes['gallery'] = json_encode($filesLeft);
+            foreach ($removeFiles as $removeFile) {
+                $this->deleteFileFromDisk($removeFile, $disk);
+            }
+        }
+
+        if (is_array($files) && class_basename($files[0]) == 'UploadedFile') {
+            /* @var UploadedFile $file */
+            foreach ($files as $file) {
+                $currentFiles[] = $file->store($folder, $disk);
+            }
+            $this->attributes[$attribute] = json_encode($currentFiles);
+        }
+    }
+
+    /**
+     * @param string $filePath
+     * @param string $disk
+     */
+    private function deleteFileFromDisk(string $filePath, string $disk): void {
+        Storage::disk($disk)->delete($filePath);
     }
 
 }
