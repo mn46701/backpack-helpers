@@ -22,7 +22,7 @@ trait ImageHelper {
      */
     public function handleStoreImageAttribute(string $attribute, $value, string $folder, string $disk) : void
     {
-        if (is_null($value)) {
+        if (is_null($value) && !is_null($this->{$attribute})) {
             $this->deleteFileFromDisk($this->{$attribute}, $disk);
             $this->attributes[$attribute] = null;
         }
