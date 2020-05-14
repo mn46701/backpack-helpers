@@ -12,7 +12,6 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=7.2",
-        "backpack/crud": "^4.*",
         "laravel/framework": "7.*",
         "intervention/image": "^2.4@dev"
     },
