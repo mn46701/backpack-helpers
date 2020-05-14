@@ -5,6 +5,7 @@ namespace BackpackHelpers\ImageHelper;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Str;
 
 /**
  * Trait ImageHelper
@@ -26,7 +27,7 @@ trait ImageHelper {
             $this->attributes[$attribute] = null;
         }
 
-        if (starts_with($value, 'data:image')) {
+        if (Str::of($value)->startsWith('data:image')) {
             $image = Image::make($value);
             preg_match("/^data:image\/(.*);base64/i", $value, $match);
             $ext = explode('/', substr($value, 0, strpos($value, ';')))[1];
